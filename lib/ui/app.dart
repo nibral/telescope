@@ -36,22 +36,19 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text('telescope'),
       ),
-      body: new Builder(builder: (BuildContext context) {
-        return new ListView(
-          children: _characterList.map((item) {
-            return new FlatButton(
-                onPressed: () {
-                  Scaffold
-                      .of(context)
-                      .showSnackBar(new SnackBar(content: new Text(item.name)));
-                },
-                child: new Row(
-                  children: <Widget>[new Text(item.name)],
-                ));
-          }).toList(),
-          padding: new EdgeInsets.all(8.0),
-        );
-      }),
+      body: new ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          var character = _characterList[index];
+          return new ListTile(
+            title: new Text(character.name),
+            onTap: () {
+              Scaffold.of(context).showSnackBar(
+                  new SnackBar(content: new Text(character.name)));
+            },
+          );
+        },
+        itemCount: _characterList.length,
+      ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         child: new Icon(Icons.add),
