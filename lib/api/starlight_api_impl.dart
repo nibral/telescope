@@ -1,20 +1,29 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/model/character_list_item.dart';
+import 'package:http/http.dart' as http;
 
 class StarlightApiImpl implements StarlightApi {
+  static const _API_HOST = 'https://starlight.kirara.ca/api/v1';
+
   var _characterMap = new Map<int, CharacterListItem>();
 
-  StarlightApiImpl() {
-    _characterMap[100] = new CharacterListItem(101, '島村卯月');
-    _characterMap[102] = new CharacterListItem(102, '中野有香');
-    _characterMap[111] = new CharacterListItem(111, '小日向美穂');
-    _characterMap[223] = new CharacterListItem(223, '速水奏');
-  }
-
   @override
-  Future<Map<int, CharacterListItem>> getCharacterList() async {
+  Future<Map<int, CharacterListItem>> getCharacterList(
+      {bool refresh = false}) async {
+    if (refresh || _characterMap.isEmpty) {
+      var response = await http.read('$_API_HOST/list/char_t');
+      var json = JSON.decode(response);
+
+      var characters = json['result'];
+      for (var character in characters) {
+        _characterMap[character['chara_id']] =
+            CharacterListItem.fromJson(character);
+      }
+    }
+
     return _characterMap;
   }
 }

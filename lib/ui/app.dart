@@ -37,10 +37,12 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('telescope'),
       ),
       body: new ListView.builder(
+
         itemBuilder: (BuildContext context, int index) {
           var character = _characterList[index];
           return new ListTile(
             title: new Text(character.name),
+            subtitle: new Text(character.kanaName),
             onTap: () {
               Scaffold.of(context).showSnackBar(
                   new SnackBar(content: new Text(character.name)));

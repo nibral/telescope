@@ -19,9 +19,9 @@ void main() {
     _subject = new CharacterListRepositoryImpl(_api);
 
     _characterList = new Map<int, CharacterListItem>();
-    _characterList[1] = new CharacterListItem(1, 'uzuki');
-    _characterList[2] = new CharacterListItem(2, 'rin');
-    _characterList[3] = new CharacterListItem(3, 'mio');
+    _characterList[1] = new CharacterListItem(1, 'uzuki', 'うづき');
+    _characterList[2] = new CharacterListItem(2, 'rin', 'りん');
+    _characterList[3] = new CharacterListItem(3, 'mio', 'みお');
   });
 
   group('findAll', () {
