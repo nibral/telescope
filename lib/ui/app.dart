@@ -18,6 +18,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<CharacterListItem> _characterList = [];
+  Map<int, Widget> _icons = new Map();
 
   @override
   void initState() {
@@ -25,6 +26,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     new RepositoryFactory().getCharacterListRepository().findAll().then((r) {
       setState(() {
+        r.values.forEach((c) {
+          _icons[c.id] = new Icon(Icons.account_circle);
+        });
         _characterList = r.values.toList();
       });
     });
@@ -37,10 +41,11 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('telescope'),
       ),
       body: new ListView.builder(
-
         itemBuilder: (BuildContext context, int index) {
           var character = _characterList[index];
+          _loadIcon(character.id);
           return new ListTile(
+            leading: _icons[character.id],
             title: new Text(character.name),
             subtitle: new Text(character.kanaName),
             onTap: () {
@@ -51,14 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         itemCount: _characterList.length,
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        child: new Icon(Icons.add),
-      ),
     );
   }
 
-  void _incrementCounter() {
-    // nothing to do
+  void _loadIcon(id) {
+    new RepositoryFactory().getCharacterRepository().find(id).then((c) {
+      setState(() {
+        _icons[id] = new Image.network(c.icon_image_ref);
+      });
+    });
   }
 }
