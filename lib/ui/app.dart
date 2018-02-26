@@ -30,6 +30,9 @@ class _MyHomePageState extends State<MyHomePage> {
           _icons[c.id] = new Icon(Icons.account_circle);
         });
         _characterList = r.values.toList();
+        _characterList.sort((a, b) {
+          return a.kanaName.compareTo(b.kanaName);
+        });
       });
     });
   }
