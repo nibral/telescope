@@ -9,22 +9,20 @@ import 'package:http/http.dart' as http;
 class StarlightApiImpl implements StarlightApi {
   static const _API_HOST = 'https://starlight.kirara.ca/api/v1';
 
-  Map<int, CharacterListItem> _characterIdMap = new Map();
-
   @override
   Future<Map<int, CharacterListItem>> getCharacterList() async {
-    if (_characterIdMap.isEmpty) {
-      var response = await http.read('$_API_HOST/list/char_t');
-      var json = JSON.decode(response);
+    Map<int, CharacterListItem> characterList = new Map();
 
-      var characters = json['result'];
-      for (var character in characters) {
-        _characterIdMap[character['chara_id']] =
-            CharacterListItem.fromJson(character);
-      }
+    var response = await http.read('$_API_HOST/list/char_t');
+    var json = JSON.decode(response);
+
+    var characters = json['result'];
+    for (var character in characters) {
+      characterList[character['chara_id']] =
+          CharacterListItem.fromJson(character);
     }
 
-    return _characterIdMap;
+    return characterList;
   }
 
   @override
