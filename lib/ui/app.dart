@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/repository_factory.dart';
+import 'package:telescope/ui/character_detail_page.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -52,8 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
             title: new Text(character.name),
             subtitle: new Text(character.kanaName),
             onTap: () {
-              Scaffold.of(context).showSnackBar(
-                  new SnackBar(content: new Text(character.name)));
+              Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (_) => new CharacterDetailPage(character.id),
+                  ));
             },
           );
         },
