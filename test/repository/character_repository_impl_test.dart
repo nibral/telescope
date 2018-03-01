@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/model/character.dart';
+import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/character_repository_impl.dart';
 import 'package:test/test.dart';
@@ -10,6 +11,8 @@ import 'package:mockito/mockito.dart';
 class MockStarlightApi extends Mock implements StarlightApi {}
 
 class MockCharacter extends Mock implements Character {}
+
+class MockCharacterListItem extends Mock implements CharacterListItem {}
 
 void main() {
   StarlightApi _api;
@@ -43,6 +46,21 @@ void main() {
       });
 
       verifyNever(_api.getCharacter(123));
+    });
+  });
+
+  group('getList', () {
+    test('call api', () async {
+      var character = new MockCharacter();
+      when(_api.getCharacterList()).thenReturn(new Future(() => [
+            character,
+          ]));
+
+      await _subject.getList().then((actual) {
+        expect(actual[0], character);
+      });
+
+      verify(_api.getCharacterList());
     });
   });
 }

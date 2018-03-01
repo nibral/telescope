@@ -1,9 +1,9 @@
 class CharacterListItem {
-  const CharacterListItem(this.id, this.name, this.kanaName);
+  const CharacterListItem(this.id, this.name, this.name_kana);
 
   final int id;
   final String name;
-  final String kanaName;
+  final String name_kana;
 
   static fromJson(json) {
     return new CharacterListItem(

@@ -27,7 +27,7 @@ void main() {
 
       expect(item.id, 101);
       expect(item.name, '島村 卯月');
-      expect(item.kanaName, "しまむら うづき");
+      expect(item.name_kana, "しまむら うづき");
     });
   });
 }

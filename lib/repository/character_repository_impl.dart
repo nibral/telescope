@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/model/character.dart';
+import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 
 class CharacterRepositoryImpl implements CharacterRepository {
@@ -21,5 +22,10 @@ class CharacterRepositoryImpl implements CharacterRepository {
       _cache[id] = character;
       return character;
     });
+  }
+
+  @override
+  Future<Map<int, CharacterListItem>> getList() {
+    return _api.getCharacterList();
   }
 }

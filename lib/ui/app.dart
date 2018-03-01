@@ -25,14 +25,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    new RepositoryFactory().getCharacterListRepository().findAll().then((r) {
+    new RepositoryFactory().getCharacterRepository().getList().then((r) {
       setState(() {
         r.values.forEach((c) {
           _icons[c.id] = new Icon(Icons.account_circle);
         });
         _characterList = r.values.toList();
         _characterList.sort((a, b) {
-          return a.kanaName.compareTo(b.kanaName);
+          return a.name_kana.compareTo(b.name_kana);
         });
       });
     });
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return new ListTile(
             leading: _icons[character.id],
             title: new Text(character.name),
-            subtitle: new Text(character.kanaName),
+            subtitle: new Text(character.name_kana),
             onTap: () {
               Navigator.of(context).push(new MaterialPageRoute(
                     builder: (_) => new CharacterDetailPage(character.id),
