@@ -30,4 +30,18 @@ void main() {
       expect(item.name_kana, "しまむら うづき");
     });
   });
+
+  group('toJson', () {
+    test('encode correctly', () {
+      var map = {
+        'chara_id': 101,
+        'kanji_spaced': "島村 卯月",
+        'kana_spaced': "しまむら うづき"
+      };
+
+      CharacterListItem item = new CharacterListItem(101, '島村 卯月', 'しまむら うづき');
+
+      expect(item.toJson(), map);
+    });
+  });
 }

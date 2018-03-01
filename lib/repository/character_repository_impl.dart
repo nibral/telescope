@@ -4,6 +4,7 @@ import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/model/character.dart';
 import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CharacterRepositoryImpl implements CharacterRepository {
   StarlightApi _api;
@@ -25,7 +26,27 @@ class CharacterRepositoryImpl implements CharacterRepository {
   }
 
   @override
-  Future<Map<int, CharacterListItem>> getList() {
-    return _api.getCharacterList();
+  Future<Map<int, CharacterListItem>> getList() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String key = 'character_list';
+
+    List<String> list = preferences.getStringList(key);
+    if (list == null) {
+      return _api.getCharacterList().then((r) {
+        preferences.setStringList(
+            key,
+            r.values.map((e) {
+              return e.toJson();
+            }).toList());
+        return r;
+      });
+    }
+
+    Map<int, CharacterListItem> map = new Map();
+    list.forEach((e) {
+      CharacterListItem item = CharacterListItem.fromJson(e);
+      map[item.id] = item;
+    });
+    return new Future.value(map);
   }
 }

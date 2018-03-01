@@ -9,4 +9,12 @@ class CharacterListItem {
     return new CharacterListItem(
         json['chara_id'], json['kanji_spaced'], json['kana_spaced']);
   }
+
+  toJson() {
+    return {
+      'chara_id': id,
+      'kanji_spaced': name,
+      'kana_spaced': name_kana,
+    };
+  }
 }

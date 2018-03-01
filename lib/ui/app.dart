@@ -25,17 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    new RepositoryFactory().getCharacterRepository().getList().then((r) {
-      setState(() {
-        r.values.forEach((c) {
-          _icons[c.id] = new Icon(Icons.account_circle);
-        });
-        _characterList = r.values.toList();
-        _characterList.sort((a, b) {
-          return a.name_kana.compareTo(b.name_kana);
-        });
-      });
-    });
+    _loadCharacterList(refresh: false);
   }
 
   @override
@@ -43,6 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('telescope'),
+        actions: <Widget>[
+          new IconButton(
+              icon: new Icon(Icons.refresh),
+              onPressed: () {
+                _loadCharacterList(refresh: true);
+              }),
+        ],
       ),
       body: new ListView.builder(
         itemBuilder: (BuildContext context, int index) {
@@ -62,6 +59,20 @@ class _MyHomePageState extends State<MyHomePage> {
         itemCount: _characterList.length,
       ),
     );
+  }
+
+  void _loadCharacterList({bool refresh = false}) {
+    new RepositoryFactory().getCharacterRepository().getList().then((r) {
+      setState(() {
+        r.values.forEach((c) {
+          _icons[c.id] = new Icon(Icons.account_circle);
+        });
+        _characterList = r.values.toList();
+        _characterList.sort((a, b) {
+          return a.name_kana.compareTo(b.name_kana);
+        });
+      });
+    });
   }
 
   void _loadIcon(id) {

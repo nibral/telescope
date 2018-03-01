@@ -2,6 +2,7 @@ import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/api/starlight_api_impl.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/character_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RepositoryFactory {
   static final RepositoryFactory _singleton = new RepositoryFactory._internal();

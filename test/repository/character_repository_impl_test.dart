@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/model/character.dart';
 import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/character_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -14,15 +17,27 @@ class MockCharacter extends Mock implements Character {}
 
 class MockCharacterListItem extends Mock implements CharacterListItem {}
 
+class MockSharedPreference extends Mock implements SharedPreferences {}
+
 void main() {
   StarlightApi _api;
   Map<int, Character> _cache;
+  SharedPreferences _preferences;
   CharacterRepository _subject;
 
-  setUp(() {
+  setUp(() async {
     _api = new MockStarlightApi();
     _cache = new Map();
+    _preferences = new MockSharedPreference();
     _subject = new CharacterRepositoryImpl(_api, _cache);
+
+    const MethodChannel('plugins.flutter.io/shared_preferences')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getAll') {
+        return <String, dynamic>{};
+      }
+      return null;
+    });
   });
 
   group('find', () {
@@ -50,17 +65,36 @@ void main() {
   });
 
   group('getList', () {
-    test('call api', () async {
-      var character = new MockCharacter();
-      when(_api.getCharacterList()).thenReturn(new Future(() => [
-            character,
-          ]));
+    test('when no data stored, call api', () async {
+      var listItem = new MockCharacterListItem();
+      when(_api.getCharacterList())
+          .thenReturn(new Future.value(<int, CharacterListItem>{
+        101: listItem,
+      }));
+      when(_preferences.getStringList('character_list'))
+          .thenReturn(const <String>[]);
 
       await _subject.getList().then((actual) {
-        expect(actual[0], character);
+        expect(actual[101], listItem);
       });
 
       verify(_api.getCharacterList());
+    });
+
+    test('when list data stored', () async {
+      CharacterListItem listItem =
+          new CharacterListItem(101, '島村 卯月', 'しまむら うづき');
+      when(_preferences.getStringList('character_list')).thenReturn(<String>[
+        JSON.encode(listItem),
+      ]);
+
+      await _subject.getList().then((actual) {
+        expect(actual[101].id, 101);
+        expect(actual[101].name, '島村 卯月');
+        expect(actual[101].name_kana, 'しまむら うづき');
+      });
+
+      verifyNever(_api.getCharacterList());
     });
   });
 }
