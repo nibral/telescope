@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:telescope/model/character_list_item.dart';
+import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
 import 'package:telescope/ui/character_detail_page.dart';
 
@@ -61,8 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _loadCharacterList({bool refresh = false}) {
-    new RepositoryFactory().getCharacterRepository().getList().then((r) {
+  void _loadCharacterList({bool refresh = false}) async {
+    CharacterRepository repository =
+        await new RepositoryFactory().getCharacterRepository();
+    repository.getList().then((r) {
       setState(() {
         r.values.forEach((c) {
           _icons[c.id] = new Icon(Icons.account_circle);
@@ -75,8 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _loadIcon(id) {
-    new RepositoryFactory().getCharacterRepository().find(id).then((c) {
+  void _loadIcon(id) async {
+    CharacterRepository repository =
+        await new RepositoryFactory().getCharacterRepository();
+    repository.find(id).then((c) {
       setState(() {
         _icons[id] = new Image.network(c.icon_image_ref);
       });

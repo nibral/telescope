@@ -17,7 +17,7 @@ class MockCharacter extends Mock implements Character {}
 
 class MockCharacterListItem extends Mock implements CharacterListItem {}
 
-class MockSharedPreference extends Mock implements SharedPreferences {}
+class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
   StarlightApi _api;
@@ -28,8 +28,8 @@ void main() {
   setUp(() async {
     _api = new MockStarlightApi();
     _cache = new Map();
-    _preferences = new MockSharedPreference();
-    _subject = new CharacterRepositoryImpl(_api, _cache);
+    _preferences = new MockSharedPreferences();
+    _subject = new CharacterRepositoryImpl(_api, _cache, _preferences);
 
     const MethodChannel('plugins.flutter.io/shared_preferences')
         .setMockMethodCallHandler((MethodCall methodCall) async {
@@ -71,8 +71,7 @@ void main() {
           .thenReturn(new Future.value(<int, CharacterListItem>{
         101: listItem,
       }));
-      when(_preferences.getStringList('character_list'))
-          .thenReturn(const <String>[]);
+      when(_preferences.getStringList('character_list')).thenReturn(null);
 
       await _subject.getList().then((actual) {
         expect(actual[101], listItem);
@@ -84,9 +83,8 @@ void main() {
     test('when list data stored', () async {
       CharacterListItem listItem =
           new CharacterListItem(101, '島村 卯月', 'しまむら うづき');
-      when(_preferences.getStringList('character_list')).thenReturn(<String>[
-        JSON.encode(listItem),
-      ]);
+      when(_preferences.getStringList('character_list'))
+          .thenReturn(<String>[JSON.encode(listItem)]);
 
       await _subject.getList().then((actual) {
         expect(actual[101].id, 101);

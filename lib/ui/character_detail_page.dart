@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
 
 class CharacterDetailPage extends StatefulWidget {
@@ -19,17 +20,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
   void initState() {
     super.initState();
 
-    new RepositoryFactory().getCharacterRepository().find(widget.id).then((r) {
-      setState(() {
-        characterDetail = new Column(
-          children: <Widget>[
-            new Image.network(r.icon_image_ref),
-            new Text(r.name),
-            new Text(r.name_kana)
-          ],
-        );
-      });
-    });
+    _loadCharacterDetail();
   }
 
   @override
@@ -40,5 +31,21 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
       ),
       body: characterDetail,
     );
+  }
+
+  void _loadCharacterDetail() async {
+    CharacterRepository repository =
+        await new RepositoryFactory().getCharacterRepository();
+    repository.find(widget.id).then((r) {
+      setState(() {
+        characterDetail = new Column(
+          children: <Widget>[
+            new Image.network(r.icon_image_ref),
+            new Text(r.name),
+            new Text(r.name_kana)
+          ],
+        );
+      });
+    });
   }
 }
