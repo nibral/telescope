@@ -73,7 +73,7 @@ void main() {
       }));
       when(_preferences.getStringList('character_list')).thenReturn(null);
 
-      await _subject.getList().then((actual) {
+      await _subject.getList(false).then((actual) {
         expect(actual[101], listItem);
       });
 
@@ -86,7 +86,7 @@ void main() {
       when(_preferences.getStringList('character_list'))
           .thenReturn(<String>[JSON.encode(listItem)]);
 
-      await _subject.getList().then((actual) {
+      await _subject.getList(false).then((actual) {
         expect(actual[101].id, 101);
         expect(actual[101].name, '島村 卯月');
         expect(actual[101].name_kana, 'しまむら うづき');

@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    _loadCharacterList(refresh: false);
+    _loadCharacterList(false);
   }
 
   @override
@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
           new IconButton(
               icon: new Icon(Icons.refresh),
               onPressed: () {
-                _loadCharacterList(refresh: true);
+                _loadCharacterList(true);
               }),
         ],
       ),
@@ -62,10 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _loadCharacterList({bool refresh = false}) async {
+  void _loadCharacterList(bool refresh) async {
     CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
-    repository.getList().then((r) {
+    repository.getList(refresh).then((r) {
       setState(() {
         r.values.forEach((c) {
           _icons[c.id] = new Icon(Icons.account_circle);
