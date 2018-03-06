@@ -24,16 +24,11 @@ class _MyHomePageState extends State<MyHomePage> {
   List<CharacterListItem> _characterList = [];
   Map<int, Widget> _icons = new Map();
 
-  Widget _iconPlaceholder = const SizedBox(
-    height: 128.0,
-    width: 128.0,
-  );
-
   @override
   void initState() {
     super.initState();
 
-    _loadCharacterList(false);
+    _loadCharacterList();
   }
 
   @override
@@ -41,16 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('telescope'),
-        actions: <Widget>[
-          new IconButton(
-              icon: new Icon(Icons.refresh),
-              onPressed: () {
-                _loadCharacterList(true);
-              }),
-        ],
       ),
       body: new Center(
         child: new GridView.builder(
+          shrinkWrap: true,
           gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 128.0,
             mainAxisSpacing: 4.0,
@@ -58,8 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           padding: const EdgeInsets.all(4.0),
           itemBuilder: (BuildContext context, int index) {
-            var character = _characterList[index];
-            _loadIcon(character.id);
+            CharacterListItem character = _characterList[index];
             return new InkWell(
               onTap: () {
                 Navigator.of(context).push(new MaterialPageRoute(
@@ -97,31 +85,34 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _loadCharacterList(bool refresh) async {
+  void _loadCharacterList() async {
     CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
-    repository.getList(refresh).then((r) {
-      setState(() {
-        r.values.forEach((c) {
-          _icons[c.id] = _iconPlaceholder;
+    Widget iconPlaceholder = const SizedBox(
+      height: 128.0,
+      width: 128.0,
+    );
+
+    repository.getList().then((characters) {
+      characters.values.forEach((character) {
+        setState(() {
+          _icons[character.id] = iconPlaceholder;
         });
-        _characterList = r.values.toList();
+        repository.find(character.id).then((detail) {
+          setState(() {
+            _icons[character.id] = new CachedNetworkImage(
+              imageUrl: detail.icon_image_ref,
+              placeholder: iconPlaceholder,
+            );
+          });
+        });
+      });
+
+      setState(() {
+        _characterList = characters.values.toList();
         _characterList.sort((a, b) {
           return a.name_kana.compareTo(b.name_kana);
         });
-      });
-    });
-  }
-
-  void _loadIcon(id) async {
-    CharacterRepository repository =
-        await new RepositoryFactory().getCharacterRepository();
-    repository.find(id).then((c) {
-      setState(() {
-        _icons[id] = new CachedNetworkImage(
-          imageUrl: c.icon_image_ref,
-          placeholder: _iconPlaceholder,
-        );
       });
     });
   }

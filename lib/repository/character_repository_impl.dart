@@ -29,11 +29,11 @@ class CharacterRepositoryImpl implements CharacterRepository {
   }
 
   @override
-  Future<Map<int, CharacterListItem>> getList(bool refresh) {
+  Future<Map<int, CharacterListItem>> getList() {
     String key = 'character_list';
 
     List<String> list = _preferences.getStringList(key);
-    if (list == null || refresh) {
+    if (list == null) {
       return _api.getCharacterList().then((r) {
         _preferences.setStringList(
             key,
