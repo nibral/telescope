@@ -10,7 +10,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
     return new MaterialApp(home: new MyHomePage());
   }
 }
@@ -37,6 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    if (orientation == Orientation.portrait) {
+      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    } else {
+      SystemChrome.setEnabledSystemUIOverlays([]);
+    }
+
     return new Scaffold(
       body: new Center(
         child: new GridView.builder(

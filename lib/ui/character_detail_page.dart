@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:telescope/model/card.dart' as CharacterCard;
 import 'package:telescope/model/character.dart';
 import 'package:telescope/repository/card_repository.dart';
@@ -33,6 +34,13 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    if (orientation == Orientation.portrait) {
+      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    } else {
+      SystemChrome.setEnabledSystemUIOverlays([]);
+    }
+
     return new Scaffold(
       body: _isLoading
           ? new Text('loading...')
@@ -43,24 +51,25 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
   }
 
   void _loadCharacterDetail() async {
-    List<Widget> images = [];
-
     CharacterRepository characterRepository =
         await new RepositoryFactory().getCharacterRepository();
-    CardRepository cardRepository = new RepositoryFactory().getCardRepository();
 
     Character character = await characterRepository.find(widget._id);
-    images.add(new Column(
+    Widget characterDetail = new Column(
       children: <Widget>[
         new CachedNetworkImage(imageUrl: character.icon_image_ref),
         new Text(character.name),
         new Text(character.name_kana),
       ],
-    ));
+    );
 
     setState(() {
+      _cardImages = [characterDetail];
       _isLoading = false;
     });
+
+    CardRepository cardRepository = new RepositoryFactory().getCardRepository();
+    List<Widget> images = [characterDetail];
 
     await Future.forEach(widget._card_id_list, (id) async {
       CharacterCard.Card card = await cardRepository.find(id);
