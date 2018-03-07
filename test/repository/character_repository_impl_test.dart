@@ -82,7 +82,7 @@ void main() {
 
     test('when list data stored', () async {
       CharacterListItem listItem =
-          new CharacterListItem(101, '島村 卯月', 'しまむら うづき');
+          new CharacterListItem(101, '島村 卯月', 'しまむら うづき', [100001]);
       when(_preferences.getStringList('character_list'))
           .thenReturn(<String>[JSON.encode(listItem)]);
 
@@ -90,6 +90,7 @@ void main() {
         expect(actual[101].id, 101);
         expect(actual[101].name, '島村 卯月');
         expect(actual[101].name_kana, 'しまむら うづき');
+        expect(actual[101].card_id_list[0], 100001);
       });
 
       verifyNever(_api.getCharacterList());

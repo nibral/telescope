@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
@@ -9,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return new MaterialApp(home: new MyHomePage());
   }
 }
@@ -21,7 +23,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final double iconSize = 128.0;
+  final double _iconSize = 128.0;
 
   List<CharacterListItem> _characterList = [];
   Map<int, Widget> _icons = new Map();
@@ -36,14 +38,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('telescope'),
-      ),
       body: new Center(
         child: new GridView.builder(
           shrinkWrap: true,
           gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: iconSize,
+            maxCrossAxisExtent: _iconSize,
             mainAxisSpacing: 2.0,
             crossAxisSpacing: 2.0,
           ),
@@ -53,7 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
             return new InkWell(
               onTap: () {
                 Navigator.of(context).push(new MaterialPageRoute(
-                      builder: (_) => new CharacterDetailPage(character.id),
+                      builder: (_) => new CharacterDetailPage(
+                          character.id, character.card_id_list),
                     ));
               },
               child: new Stack(
@@ -79,8 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       padding: const EdgeInsets.only(left: 4.0),
                     ),
-                    width: iconSize,
-                    height: iconSize / 4,
+                    width: _iconSize,
+                    height: _iconSize / 4,
                     left: 0.0,
                     bottom: 0.0,
                   ),
@@ -98,8 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
     CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
     Widget iconPlaceholder = new SizedBox(
-      height: iconSize,
-      width: iconSize,
+      height: _iconSize,
+      width: _iconSize,
     );
 
     repository.getList().then((characters) {
@@ -112,8 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
             _icons[character.id] = new CachedNetworkImage(
               imageUrl: detail.icon_image_ref,
               placeholder: iconPlaceholder,
-              height: iconSize,
-              width: iconSize,
+              height: _iconSize,
+              width: _iconSize,
               fit: BoxFit.cover,
             );
           });

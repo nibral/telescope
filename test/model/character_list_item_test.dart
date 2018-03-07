@@ -36,10 +36,28 @@ void main() {
       var map = {
         'chara_id': 101,
         'kanji_spaced': "島村 卯月",
-        'kana_spaced': "しまむら うづき"
+        'kana_spaced': "しまむら うづき",
+        'cards': [
+          100001,
+          100075,
+          100255,
+          100293,
+          100447,
+        ],
       };
 
-      CharacterListItem item = new CharacterListItem(101, '島村 卯月', 'しまむら うづき');
+      CharacterListItem item = new CharacterListItem(
+        101,
+        '島村 卯月',
+        'しまむら うづき',
+        [
+          100001,
+          100075,
+          100255,
+          100293,
+          100447,
+        ],
+      );
 
       expect(item.toJson(), map);
     });

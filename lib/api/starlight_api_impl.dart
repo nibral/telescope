@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:telescope/api/starlight_api.dart';
+import 'package:telescope/model/card.dart';
 import 'package:telescope/model/character.dart';
 import 'package:telescope/model/character_list_item.dart';
 import 'package:http/http.dart' as http;
@@ -38,5 +39,20 @@ class StarlightApiImpl implements StarlightApi {
     }
 
     return characterMap[id];
+  }
+
+  @override
+  Future<Card> getCard(int id) async {
+    Map<int, Card> cardMap = new Map();
+
+    var response = await http.read('$_API_HOST/card_t/$id');
+    var json = JSON.decode(response);
+
+    var cards = json['result'];
+    for (var card in cards) {
+      cardMap[card['id']] = Card.fromJson(card);
+    }
+
+    return cardMap[id];
   }
 }
