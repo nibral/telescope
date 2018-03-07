@@ -21,6 +21,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final double iconSize = 128.0;
+
   List<CharacterListItem> _characterList = [];
   Map<int, Widget> _icons = new Map();
 
@@ -41,11 +43,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new GridView.builder(
           shrinkWrap: true,
           gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 128.0,
-            mainAxisSpacing: 4.0,
-            crossAxisSpacing: 4.0,
+            maxCrossAxisExtent: iconSize,
+            mainAxisSpacing: 2.0,
+            crossAxisSpacing: 2.0,
           ),
-          padding: const EdgeInsets.all(4.0),
+          padding: const EdgeInsets.all(2.0),
           itemBuilder: (BuildContext context, int index) {
             CharacterListItem character = _characterList[index];
             return new InkWell(
@@ -59,19 +61,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   _icons[character.id],
                   new Positioned(
                     child: new Container(
-                      child: new Text(
-                        character.name,
-                        style: new TextStyle(
-                          color: Colors.white,
-                        ),
+                      child: new Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          new Flexible(
+                            child: new Text(
+                              character.name,
+                              style: const TextStyle(color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
-                      decoration: new BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: const Color.fromRGBO(0, 0, 0, 0.5),
                       ),
                       padding: const EdgeInsets.only(left: 4.0),
                     ),
-                    width: 128.0,
-                    height: 32.0,
+                    width: iconSize,
+                    height: iconSize / 4,
                     left: 0.0,
                     bottom: 0.0,
                   ),
@@ -88,9 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loadCharacterList() async {
     CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
-    Widget iconPlaceholder = const SizedBox(
-      height: 128.0,
-      width: 128.0,
+    Widget iconPlaceholder = new SizedBox(
+      height: iconSize,
+      width: iconSize,
     );
 
     repository.getList().then((characters) {
@@ -103,6 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
             _icons[character.id] = new CachedNetworkImage(
               imageUrl: detail.icon_image_ref,
               placeholder: iconPlaceholder,
+              height: iconSize,
+              width: iconSize,
+              fit: BoxFit.cover,
             );
           });
         });
