@@ -23,6 +23,7 @@ class CharacterDetailPage extends StatefulWidget {
 
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
   bool _isLoading = true;
+  Widget _characterDetail;
   List<Widget> _cardImages = [];
 
   @override
@@ -43,9 +44,24 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
     return new Scaffold(
       body: _isLoading
-          ? new Text('loading...')
-          : new ListView(
-              children: _cardImages,
+          ? new Center(
+              child: new CircularProgressIndicator(),
+            )
+          : new CustomScrollView(
+              slivers: <Widget>[
+                new SliverToBoxAdapter(
+                  child: _characterDetail,
+                ),
+                new SliverList(
+                  delegate: new SliverChildListDelegate(_cardImages),
+                ),
+                new SliverToBoxAdapter(
+                  child: new Container(
+                    height: 32.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
     );
   }
@@ -55,7 +71,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
         await new RepositoryFactory().getCharacterRepository();
 
     Character character = await characterRepository.find(widget._id);
-    Widget characterDetail = new Column(
+    _characterDetail = new Column(
       children: <Widget>[
         new CachedNetworkImage(imageUrl: character.icon_image_ref),
         new Text(character.name),
@@ -64,34 +80,24 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
     );
 
     setState(() {
-      _cardImages = [characterDetail];
       _isLoading = false;
     });
 
     CardRepository cardRepository = new RepositoryFactory().getCardRepository();
-    List<Widget> images = [characterDetail];
+    List<Widget> images = [];
 
     await Future.forEach(widget._card_id_list, (id) async {
       CharacterCard.Card card = await cardRepository.find(id);
       if (card.spread_image_ref != null) {
-        images.add(new Column(
-          children: <Widget>[
-            new Text(card.name),
-            new CachedNetworkImage(imageUrl: card.spread_image_ref),
-          ],
-        ));
+        images.add(new CardSpreadImage(card.name, card.spread_image_ref));
       }
 
       if (card.evolution_id != 0) {
         CharacterCard.Card evo_card =
             await cardRepository.find(card.evolution_id);
         if (evo_card.spread_image_ref != null) {
-          images.add(new Column(
-            children: <Widget>[
-              new Text(evo_card.name),
-              new CachedNetworkImage(imageUrl: evo_card.spread_image_ref),
-            ],
-          ));
+          images.add(
+              new CardSpreadImage(evo_card.name, evo_card.spread_image_ref));
         }
       }
     });
@@ -99,5 +105,30 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
     setState(() {
       _cardImages = images;
     });
+  }
+}
+
+class CardSpreadImage extends StatelessWidget {
+  final String name;
+  final String imageUrl;
+
+  CardSpreadImage(this.name, this.imageUrl);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Column(
+      children: <Widget>[
+        new Container(
+          height: 32.0,
+          child: new Center(
+            child: new Text(name),
+          ),
+        ),
+        new CachedNetworkImage(
+          imageUrl: imageUrl,
+          placeholder: new CircularProgressIndicator(),
+        )
+      ],
+    );
   }
 }
