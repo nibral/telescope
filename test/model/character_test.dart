@@ -9,8 +9,8 @@ void main() {
       var json = JSON.decode('''
       {
         "id": 101,
-        "name": "島村 卯月",
-        "name_kana": "しまむら うづき",
+        "kanji_spaced": "島村 卯月",
+        "kana_spaced": "しまむら うづき",
         "icon_image_ref": "https://truecolor.kirara.ca/icon_char/101.png"
       }      
       ''');

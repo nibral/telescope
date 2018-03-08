@@ -8,6 +8,6 @@ class Character {
 
   static fromJson(json) {
     return new Character(
-        json['id'], json['name'], json['name_kana'], json['icon_image_ref']);
+        json['id'], json['kanji_spaced'], json['kana_spaced'], json['icon_image_ref']);
   }
 }

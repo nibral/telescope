@@ -37,13 +37,20 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
-    if (orientation == Orientation.portrait) {
-      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    final bool isPortrait = orientation == Orientation.portrait;
+    if (isPortrait) {
+      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     } else {
       SystemChrome.setEnabledSystemUIOverlays([]);
     }
 
     return new Scaffold(
+      appBar: isPortrait
+          ? new AppBar(
+              title: new Text('telescope'),
+              centerTitle: true,
+            )
+          : null,
       body: new Center(
         child: new GridView.builder(
           shrinkWrap: true,
@@ -82,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       decoration: const BoxDecoration(
                         color: const Color.fromRGBO(0, 0, 0, 0.5),
+
                       ),
                       padding: const EdgeInsets.only(left: 4.0),
                     ),

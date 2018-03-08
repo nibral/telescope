@@ -23,6 +23,7 @@ class CharacterDetailPage extends StatefulWidget {
 
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
   bool isLoading = true;
+  String characterName = '';
   Widget characterDetail;
   List<Widget> cardImages = [];
 
@@ -36,13 +37,20 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
-    if (orientation == Orientation.portrait) {
-      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    final bool isPortrait = orientation == Orientation.portrait;
+    if (isPortrait) {
+      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     } else {
       SystemChrome.setEnabledSystemUIOverlays([]);
     }
 
     return new Scaffold(
+      appBar: isPortrait
+          ? new AppBar(
+              title: new Text(characterName),
+              centerTitle: true,
+            )
+          : null,
       body: isLoading
           ? new Center(
               child: new CircularProgressIndicator(),
@@ -58,7 +66,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
                 new SliverToBoxAdapter(
                   child: new Container(
                     height: 32.0,
-                    color: Colors.white,
+                    color: Colors.transparent,
                   ),
                 ),
               ],
@@ -71,6 +79,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
         await new RepositoryFactory().getCharacterRepository();
 
     Character character = await characterRepository.find(widget.id);
+    characterName = character.name;
     characterDetail = new Column(
       children: <Widget>[
         new CachedNetworkImage(imageUrl: character.iconImageUrl),
@@ -81,6 +90,11 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
     setState(() {
       isLoading = false;
+      cardImages = [
+        new Center(
+          child: new CircularProgressIndicator(),
+        )
+      ];
     });
 
     CardRepository cardRepository = new RepositoryFactory().getCardRepository();
@@ -96,8 +110,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
         CharacterCard.Card evoCard =
             await cardRepository.find(card.evolutionCardId);
         if (evoCard.spreadImageUrl != null) {
-          images.add(
-              new CardSpreadImage(evoCard.name, evoCard.spreadImageUrl));
+          images.add(new CardSpreadImage(evoCard.name, evoCard.spreadImageUrl));
         }
       }
     });
