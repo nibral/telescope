@@ -22,10 +22,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final double _iconSize = 128.0;
+  static final double iconSize = 128.0;
 
-  List<CharacterListItem> _characterList = [];
-  Map<int, Widget> _icons = new Map();
+  List<CharacterListItem> characterList = [];
+  Map<int, Widget> icons = new Map();
 
   @override
   void initState() {
@@ -48,23 +48,23 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new GridView.builder(
           shrinkWrap: true,
           gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: _iconSize,
+            maxCrossAxisExtent: iconSize,
             mainAxisSpacing: 2.0,
             crossAxisSpacing: 2.0,
           ),
           padding: const EdgeInsets.all(2.0),
           itemBuilder: (BuildContext context, int index) {
-            CharacterListItem character = _characterList[index];
+            CharacterListItem character = characterList[index];
             return new InkWell(
               onTap: () {
                 Navigator.of(context).push(new MaterialPageRoute(
                       builder: (_) => new CharacterDetailPage(
-                          character.id, character.card_id_list),
+                          character.id, character.cardIdList),
                     ));
               },
               child: new Stack(
                 children: <Widget>[
-                  _icons[character.id],
+                  icons[character.id],
                   new Positioned(
                     child: new Container(
                       child: new Row(
@@ -85,8 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       padding: const EdgeInsets.only(left: 4.0),
                     ),
-                    width: _iconSize,
-                    height: _iconSize / 4,
+                    width: iconSize,
+                    height: iconSize / 4,
                     left: 0.0,
                     bottom: 0.0,
                   ),
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           },
-          itemCount: _characterList.length,
+          itemCount: characterList.length,
         ),
       ),
     );
@@ -104,22 +104,22 @@ class _MyHomePageState extends State<MyHomePage> {
     CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
     Widget iconPlaceholder = new SizedBox(
-      height: _iconSize,
-      width: _iconSize,
+      height: iconSize,
+      width: iconSize,
     );
 
     repository.getList().then((characters) {
       characters.values.forEach((character) {
         setState(() {
-          _icons[character.id] = iconPlaceholder;
+          icons[character.id] = iconPlaceholder;
         });
         repository.find(character.id).then((detail) {
           setState(() {
-            _icons[character.id] = new CachedNetworkImage(
-              imageUrl: detail.icon_image_ref,
+            icons[character.id] = new CachedNetworkImage(
+              imageUrl: detail.iconImageUrl,
               placeholder: iconPlaceholder,
-              height: _iconSize,
-              width: _iconSize,
+              height: iconSize,
+              width: iconSize,
               fit: BoxFit.cover,
             );
           });
@@ -127,9 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
       });
 
       setState(() {
-        _characterList = characters.values.toList();
-        _characterList.sort((a, b) {
-          return a.name_kana.compareTo(b.name_kana);
+        characterList = characters.values.toList();
+        characterList.sort((a, b) {
+          return a.nameKana.compareTo(b.nameKana);
         });
       });
     });

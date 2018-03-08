@@ -89,8 +89,8 @@ void main() {
       await _subject.getList().then((actual) {
         expect(actual[101].id, 101);
         expect(actual[101].name, '島村 卯月');
-        expect(actual[101].name_kana, 'しまむら うづき');
-        expect(actual[101].card_id_list[0], 100001);
+        expect(actual[101].nameKana, 'しまむら うづき');
+        expect(actual[101].cardIdList[0], 100001);
       });
 
       verifyNever(_api.getCharacterList());

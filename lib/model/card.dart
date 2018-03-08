@@ -1,10 +1,10 @@
 class Card {
-  const Card(this.id, this.name, this.evolution_id, this.spread_image_ref);
+  const Card(this.id, this.name, this.evolutionCardId, this.spreadImageUrl);
 
   final int id;
   final String name;
-  final int evolution_id;
-  final String spread_image_ref;
+  final int evolutionCardId;
+  final String spreadImageUrl;
 
   static fromJson(json) {
     return new Card(

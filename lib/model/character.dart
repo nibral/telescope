@@ -1,10 +1,10 @@
 class Character {
-  const Character(this.id, this.name, this.name_kana, this.icon_image_ref);
+  const Character(this.id, this.name, this.nameKana, this.iconImageUrl);
 
   final int id;
   final String name;
-  final String name_kana;
-  final String icon_image_ref;
+  final String nameKana;
+  final String iconImageUrl;
 
   static fromJson(json) {
     return new Character(

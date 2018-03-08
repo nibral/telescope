@@ -19,9 +19,9 @@ void main() {
 
       expect(card.id, 100001);
       expect(card.name, "島村 卯月");
-      expect(card.evolution_id, 100002);
+      expect(card.evolutionCardId, 100002);
       expect(
-          card.spread_image_ref, "https://truecolor.kirara.ca/spread/100001.png");
+          card.spreadImageUrl, "https://truecolor.kirara.ca/spread/100001.png");
     });
   });
 }

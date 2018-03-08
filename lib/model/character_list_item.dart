@@ -1,10 +1,10 @@
 class CharacterListItem {
-  const CharacterListItem(this.id, this.name, this.name_kana, this.card_id_list);
+  const CharacterListItem(this.id, this.name, this.nameKana, this.cardIdList);
 
   final int id;
   final String name;
-  final String name_kana;
-  final List<int> card_id_list;
+  final String nameKana;
+  final List<int> cardIdList;
 
   static fromJson(json) {
     return new CharacterListItem(
@@ -15,8 +15,8 @@ class CharacterListItem {
     return {
       'chara_id': id,
       'kanji_spaced': name,
-      'kana_spaced': name_kana,
-      'cards': card_id_list,
+      'kana_spaced': nameKana,
+      'cards': cardIdList,
     };
   }
 }

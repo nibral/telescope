@@ -10,10 +10,10 @@ import 'package:telescope/repository/repository_factory.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class CharacterDetailPage extends StatefulWidget {
-  final int _id;
-  final List<int> _card_id_list;
+  final int id;
+  final List<int> cardIdList;
 
-  const CharacterDetailPage(this._id, this._card_id_list);
+  const CharacterDetailPage(this.id, this.cardIdList);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,9 +22,9 @@ class CharacterDetailPage extends StatefulWidget {
 }
 
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
-  bool _isLoading = true;
-  Widget _characterDetail;
-  List<Widget> _cardImages = [];
+  bool isLoading = true;
+  Widget characterDetail;
+  List<Widget> cardImages = [];
 
   @override
   void initState() {
@@ -43,17 +43,17 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
     }
 
     return new Scaffold(
-      body: _isLoading
+      body: isLoading
           ? new Center(
               child: new CircularProgressIndicator(),
             )
           : new CustomScrollView(
               slivers: <Widget>[
                 new SliverToBoxAdapter(
-                  child: _characterDetail,
+                  child: characterDetail,
                 ),
                 new SliverList(
-                  delegate: new SliverChildListDelegate(_cardImages),
+                  delegate: new SliverChildListDelegate(cardImages),
                 ),
                 new SliverToBoxAdapter(
                   child: new Container(
@@ -70,40 +70,40 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
     CharacterRepository characterRepository =
         await new RepositoryFactory().getCharacterRepository();
 
-    Character character = await characterRepository.find(widget._id);
-    _characterDetail = new Column(
+    Character character = await characterRepository.find(widget.id);
+    characterDetail = new Column(
       children: <Widget>[
-        new CachedNetworkImage(imageUrl: character.icon_image_ref),
+        new CachedNetworkImage(imageUrl: character.iconImageUrl),
         new Text(character.name),
-        new Text(character.name_kana),
+        new Text(character.nameKana),
       ],
     );
 
     setState(() {
-      _isLoading = false;
+      isLoading = false;
     });
 
     CardRepository cardRepository = new RepositoryFactory().getCardRepository();
     List<Widget> images = [];
 
-    await Future.forEach(widget._card_id_list, (id) async {
+    await Future.forEach(widget.cardIdList, (id) async {
       CharacterCard.Card card = await cardRepository.find(id);
-      if (card.spread_image_ref != null) {
-        images.add(new CardSpreadImage(card.name, card.spread_image_ref));
+      if (card.spreadImageUrl != null) {
+        images.add(new CardSpreadImage(card.name, card.spreadImageUrl));
       }
 
-      if (card.evolution_id != 0) {
-        CharacterCard.Card evo_card =
-            await cardRepository.find(card.evolution_id);
-        if (evo_card.spread_image_ref != null) {
+      if (card.evolutionCardId != 0) {
+        CharacterCard.Card evoCard =
+            await cardRepository.find(card.evolutionCardId);
+        if (evoCard.spreadImageUrl != null) {
           images.add(
-              new CardSpreadImage(evo_card.name, evo_card.spread_image_ref));
+              new CardSpreadImage(evoCard.name, evoCard.spreadImageUrl));
         }
       }
     });
 
     setState(() {
-      _cardImages = images;
+      cardImages = images;
     });
   }
 }

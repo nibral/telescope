@@ -19,7 +19,7 @@ void main() {
 
       expect(character.id, 101);
       expect(character.name, '島村 卯月');
-      expect(character.name_kana, "しまむら うづき");
+      expect(character.nameKana, "しまむら うづき");
     });
   });
 }
