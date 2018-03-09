@@ -19,7 +19,9 @@ void main() {
 
       expect(character.id, 101);
       expect(character.name, '島村 卯月');
-      expect(character.nameKana, "しまむら うづき");
+      expect(character.nameKana, 'しまむら うづき');
+      expect(character.iconImageUrl,
+          'https://truecolor.kirara.ca/icon_char/101.png');
     });
   });
 }
