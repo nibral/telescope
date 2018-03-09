@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 Navigator.of(context).push(new MaterialPageRoute(
                       builder: (_) => new CharacterDetailPage(
-                          character.id, character.cardIdList),
+                          character.name, character.cardIdList),
                     ));
               },
               child: new Stack(
