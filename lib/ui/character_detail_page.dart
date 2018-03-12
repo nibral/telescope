@@ -128,21 +128,28 @@ class CardSpreadImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new InkWell(
-      child: new CachedNetworkImage(
-        imageUrl: imageUrl,
-        placeholder: new Center(
-          child: new AspectRatio(
-            aspectRatio: 1.553,
-            child: new Container(),
+    return new Column(
+      children: <Widget>[
+        new Container(
+          child: new Text(
+            name,
+            style: new TextStyle(fontSize: 16.0),
           ),
         ),
-      ),
-      onTap: () {
-        Scaffold
-            .of(context)
-            .showSnackBar(new SnackBar(content: new Text(name)));
-      },
+        new CachedNetworkImage(
+          imageUrl: imageUrl,
+          placeholder: new Center(
+            child: new AspectRatio(
+              aspectRatio: 1.553,
+              child: new Container(
+                decoration: new BoxDecoration(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
