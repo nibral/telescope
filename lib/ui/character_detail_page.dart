@@ -3,11 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:telescope/model/card.dart' as CharacterCard;
-import 'package:telescope/model/character.dart';
 import 'package:telescope/repository/card_repository.dart';
-import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:telescope/ui/provider/local_cached_network_image_provider.dart';
 
 class CharacterDetailPage extends StatefulWidget {
   final String name;
@@ -61,8 +59,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
           : new CustomScrollView(
               slivers: <Widget>[
                 new SliverList(
-                  delegate: new SliverChildListDelegate(cardImages),
-                ),
+                    delegate: new SliverChildListDelegate(cardImages)),
                 new SliverToBoxAdapter(
                   child: new Container(
                     height: 16.0,
@@ -136,19 +133,20 @@ class CardSpreadImage extends StatelessWidget {
             style: new TextStyle(fontSize: 16.0),
           ),
         ),
-        new CachedNetworkImage(
-          imageUrl: imageUrl,
-          placeholder: new Center(
-            child: new AspectRatio(
-              aspectRatio: 1.553,
-              child: new Container(
-                decoration: new BoxDecoration(
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ),
+//        new CachedNetworkImage(
+//          imageUrl: imageUrl,
+//          placeholder: new Center(
+//            child: new AspectRatio(
+//              aspectRatio: 1.553,
+//              child: new Container(
+//                decoration: new BoxDecoration(
+//                  color: Colors.grey,
+//                ),
+//              ),
+//            ),
+//          ),
+//        ),
+        new Image(image: new LocalCachedNetworkImageProvider(imageUrl)),
       ],
     );
   }

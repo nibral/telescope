@@ -5,7 +5,6 @@ import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
 import 'package:telescope/ui/character_detail_page.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -89,7 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       decoration: const BoxDecoration(
                         color: const Color.fromRGBO(0, 0, 0, 0.5),
-
                       ),
                       padding: const EdgeInsets.only(left: 4.0),
                     ),
@@ -123,9 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         repository.find(character.id).then((detail) {
           setState(() {
-            icons[character.id] = new CachedNetworkImage(
-              imageUrl: detail.iconImageUrl,
-              placeholder: iconPlaceholder,
+            icons[character.id] = new Image.network(
+              detail.iconImageUrl,
               height: iconSize,
               width: iconSize,
               fit: BoxFit.cover,
