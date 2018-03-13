@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CacheManager {
@@ -18,9 +17,7 @@ class CacheManager {
 
   Future<Uint8List> get(String url) async {
     Directory directory = await getApplicationDocumentsDirectory();
-
-    String baseName = basename(url);
-    String hash = hex.encode(crypto.md5.convert(UTF8.encode(baseName)).bytes);
+    String hash = hex.encode(crypto.md5.convert(UTF8.encode(url)).bytes);
     File file = new File('${directory.path}/$hash');
     if (file.existsSync()) {
       return new Future.value(new Uint8List.fromList(await file.readAsBytes()));
