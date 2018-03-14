@@ -20,8 +20,8 @@ class CharacterDetailPage extends StatefulWidget {
 }
 
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
-  bool isLoading = true;
-  List<Widget> cardImages = [];
+  bool _isLoading = true;
+  List<Map<String, String>> _cardImages = [];
 
   @override
   void initState() {
@@ -40,6 +40,47 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
       SystemChrome.setEnabledSystemUIOverlays([]);
     }
 
+    Widget body;
+    if (!_isLoading) {
+      if (_cardImages.isEmpty) {
+        body = new Container(
+          child: new Center(
+            child: new Text(
+              'no card',
+              style: new TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          padding: const EdgeInsets.only(top: 16.0),
+        );
+      } else {
+        body = new CustomScrollView(
+          slivers: <Widget>[
+            new SliverList(
+                delegate: new SliverChildBuilderDelegate(
+              (_, index) {
+                var image = _cardImages[index];
+                return new Container(
+                  child: new CardSpreadImage(image["name"], image["imageUrl"]),
+                  padding: const EdgeInsets.only(top: 16.0),
+                );
+              },
+              childCount: _cardImages.length,
+            )),
+            new SliverToBoxAdapter(
+              child: new Container(
+                height: 16.0,
+                color: Colors.transparent,
+              ),
+            ),
+          ],
+        );
+      }
+    } else {
+      body = new Center(child: new CircularProgressIndicator());
+    }
+
     return new Scaffold(
       appBar: isPortrait
           ? new AppBar(
@@ -52,67 +93,39 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
               centerTitle: true,
             )
           : null,
-      body: isLoading
-          ? new Center(
-              child: new CircularProgressIndicator(),
-            )
-          : new CustomScrollView(
-              slivers: <Widget>[
-                new SliverList(
-                    delegate: new SliverChildListDelegate(cardImages)),
-                new SliverToBoxAdapter(
-                  child: new Container(
-                    height: 16.0,
-                    color: Colors.transparent,
-                  ),
-                ),
-              ],
-            ),
+      body: body,
     );
   }
 
   void _loadCharacterDetail() async {
-    CardRepository cardRepository = new RepositoryFactory().getCardRepository();
-    List<Widget> images = [];
+    final CardRepository cardRepository =
+        new RepositoryFactory().getCardRepository();
+    final List<Map<String, String>> images = [];
 
     await Future.forEach(widget.cardIdList, (id) async {
       CharacterCard.Card card = await cardRepository.find(id);
       if (card.spreadImageUrl != null) {
-        images.add(new Container(
-          child: new CardSpreadImage(card.name, card.spreadImageUrl),
-          padding: const EdgeInsets.only(top: 16.0),
-        ));
+        images.add({
+          "name": card.name,
+          "imageUrl": card.spreadImageUrl,
+        });
       }
 
       if (card.evolutionCardId != 0) {
-        CharacterCard.Card evoCard =
+        CharacterCard.Card evolutionCard =
             await cardRepository.find(card.evolutionCardId);
-        if (evoCard.spreadImageUrl != null) {
-          images.add(new Container(
-            child: new CardSpreadImage(evoCard.name, evoCard.spreadImageUrl),
-            padding: const EdgeInsets.only(top: 16.0),
-          ));
+        if (evolutionCard.spreadImageUrl != null) {
+          images.add({
+            "name": evolutionCard.name,
+            "imageUrl": evolutionCard.spreadImageUrl,
+          });
         }
       }
     });
 
-    if (images.isEmpty) {
-      images.add(new Container(
-        child: new Center(
-          child: new Text(
-            'no card',
-            style: new TextStyle(
-              color: Colors.grey,
-            ),
-          ),
-        ),
-        padding: const EdgeInsets.only(top: 16.0),
-      ));
-    }
-
     setState(() {
-      cardImages = images;
-      isLoading = false;
+      _cardImages = images;
+      _isLoading = false;
     });
   }
 }
@@ -120,6 +133,18 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 class CardSpreadImage extends StatelessWidget {
   final String name;
   final String imageUrl;
+
+  // 1280x824 = 1.553:1
+  final Widget _placeholder = new Center(
+    child: new AspectRatio(
+      aspectRatio: 1.553,
+      child: new Container(
+        decoration: new BoxDecoration(
+          color: new Color.fromRGBO(238, 238, 238, 1.0),
+        ),
+      ),
+    ),
+  );
 
   CardSpreadImage(this.name, this.imageUrl);
 
@@ -135,16 +160,7 @@ class CardSpreadImage extends StatelessWidget {
         ),
         new LocalCachedNetworkImage(
           imageUrl,
-          placeholder: new Center(
-            child: new AspectRatio(
-              aspectRatio: 1.553,
-              child: new Container(
-                decoration: new BoxDecoration(
-                  color: new Color.fromRGBO(238, 238, 238, 1.0),
-                ),
-              ),
-            ),
-          ),
+          placeholder: _placeholder,
         ),
       ],
     );
