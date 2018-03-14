@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:telescope/model/card.dart' as CharacterCard;
 import 'package:telescope/repository/card_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
-import 'package:telescope/ui/provider/local_cached_network_image_provider.dart';
+import 'package:telescope/ui/widget/local_cached_network_image.dart';
 
 class CharacterDetailPage extends StatefulWidget {
   final String name;
@@ -100,7 +100,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
       images.add(new Container(
         child: new Center(
           child: new Text(
-            'カードなし',
+            'no card',
             style: new TextStyle(
               color: Colors.grey,
             ),
@@ -133,20 +133,19 @@ class CardSpreadImage extends StatelessWidget {
             style: new TextStyle(fontSize: 16.0),
           ),
         ),
-//        new CachedNetworkImage(
-//          imageUrl: imageUrl,
-//          placeholder: new Center(
-//            child: new AspectRatio(
-//              aspectRatio: 1.553,
-//              child: new Container(
-//                decoration: new BoxDecoration(
-//                  color: Colors.grey,
-//                ),
-//              ),
-//            ),
-//          ),
-//        ),
-        new Image(image: new LocalCachedNetworkImageProvider(imageUrl)),
+        new LocalCachedNetworkImage(
+          imageUrl,
+          placeholder: new Center(
+            child: new AspectRatio(
+              aspectRatio: 1.553,
+              child: new Container(
+                decoration: new BoxDecoration(
+                  color: new Color.fromRGBO(238, 238, 238, 1.0),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

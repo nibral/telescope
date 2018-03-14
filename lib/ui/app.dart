@@ -5,6 +5,7 @@ import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
 import 'package:telescope/ui/character_detail_page.dart';
+import 'package:telescope/ui/widget/local_cached_network_image.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -121,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         repository.find(character.id).then((detail) {
           setState(() {
-            icons[character.id] = new Image.network(
+            icons[character.id] = new LocalCachedNetworkImage(
               detail.iconImageUrl,
               height: iconSize,
               width: iconSize,
