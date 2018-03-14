@@ -140,7 +140,7 @@ class _LocalCachedNetworkImageProvider
   }
 
   Future<Codec> _loadImage() async {
-    Uint8List data = await new CacheManager().get(url);
+    Uint8List data = await new CacheManager().load(url);
     return await instantiateImageCodec(data);
   }
 }

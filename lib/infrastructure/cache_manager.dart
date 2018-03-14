@@ -15,7 +15,7 @@ class CacheManager {
     this._client = client ?? new http.Client();
   }
 
-  Future<Uint8List> get(String url) async {
+  Future<Uint8List> load(String url) async {
     Directory directory = await getApplicationDocumentsDirectory();
     String hash = hex.encode(crypto.md5.convert(UTF8.encode(url)).bytes);
     File file = new File('${directory.path}/$hash');

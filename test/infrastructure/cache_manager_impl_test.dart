@@ -59,13 +59,13 @@ void main() {
     });
 
     test('by download', () async {
-      await _subject.get('/download').then((actual) {
+      await _subject.load('/download').then((actual) {
         expect(actual, UTF8.encode('download'));
       });
     });
 
     test('by cache', () async {
-      await _subject.get('/cache').then((actual) {
+      await _subject.load('/cache').then((actual) {
         expect(actual, UTF8.encode('cache'));
       });
     });

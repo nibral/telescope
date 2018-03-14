@@ -21,15 +21,13 @@ class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
   StarlightApi _api;
-  Map<int, Character> _cache;
   SharedPreferences _preferences;
   CharacterRepository _subject;
 
   setUp(() async {
     _api = new MockStarlightApi();
-    _cache = new Map();
     _preferences = new MockSharedPreferences();
-    _subject = new CharacterRepositoryImpl(_api, _cache, _preferences);
+    _subject = new CharacterRepositoryImpl(_api, _preferences);
 
     const MethodChannel('plugins.flutter.io/shared_preferences')
         .setMockMethodCallHandler((MethodCall methodCall) async {
@@ -41,7 +39,7 @@ void main() {
   });
 
   group('find', () {
-    test('call api when cache is empty.', () async {
+    test('when cache is empty, call api.', () async {
       var character = new MockCharacter();
       when(_api.getCharacter(123)).thenReturn(new Future.value(character));
 
@@ -52,12 +50,30 @@ void main() {
       verify(_api.getCharacter(123));
     });
 
-    test('use cache when object cached.', () async {
+    test('when force refresh, call api', () async {
       var character = new MockCharacter();
-      _cache[123] = character;
+      when(_api.getCharacter(123)).thenReturn(new Future.value(character));
+      var cached = new Character(123, '島村 卯月', 'しまむら うづき', '');
+      when(_preferences.getString('character_123'))
+          .thenReturn(JSON.encode(cached));
+
+      await _subject.find(123, refresh: true).then((actual) {
+        expect(actual, character);
+      });
+
+      verify(_api.getCharacter(123));
+    });
+
+    test('when object cached, use cache.', () async {
+      var character = new Character(123, '島村 卯月', 'しまむら うづき', '');
+      when(_preferences.getString('character_123'))
+          .thenReturn(JSON.encode(character));
 
       await _subject.find(123).then((actual) {
-        expect(actual, character);
+        expect(actual.id, character.id);
+        expect(actual.name, character.name);
+        expect(actual.nameKana, character.nameKana);
+        expect(actual.iconImageUrl, character.iconImageUrl);
       });
 
       verifyNever(_api.getCharacter(123));
@@ -80,7 +96,25 @@ void main() {
       verify(_api.getCharacterList());
     });
 
-    test('when list data stored', () async {
+    test('when force refresh, call api.', () async {
+      var listItem = new MockCharacterListItem();
+      when(_api.getCharacterList())
+          .thenReturn(new Future.value(<int, CharacterListItem>{
+        101: listItem,
+      }));
+      CharacterListItem cached =
+          new CharacterListItem(101, '島村 卯月', 'しまむら うづき', [100001]);
+      when(_preferences.getStringList('character_list'))
+          .thenReturn(<String>[JSON.encode(cached)]);
+
+      await _subject.getList(refresh: true).then((actual) {
+        expect(actual[101], listItem);
+      });
+
+      verify(_api.getCharacterList());
+    });
+
+    test('when list data cached, use cache.', () async {
       CharacterListItem listItem =
           new CharacterListItem(101, '島村 卯月', 'しまむら うづき', [100001]);
       when(_preferences.getStringList('character_list'))

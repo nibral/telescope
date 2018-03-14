@@ -10,45 +10,46 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CharacterRepositoryImpl implements CharacterRepository {
   StarlightApi _api;
 
-  Map<int, Character> _cache;
-
   SharedPreferences _preferences;
 
-  CharacterRepositoryImpl(this._api, this._cache, this._preferences);
+  CharacterRepositoryImpl(this._api, this._preferences);
 
   @override
-  Future<Character> find(int id) {
-    if (_cache.containsKey(id)) {
-      return new Future.value(_cache[id]);
+  Future<Character> find(int id, {bool refresh: false}) {
+    String key = 'character_$id';
+
+    String cached = _preferences.getString(key);
+    if (cached != null && !refresh) {
+      return new Future.value(Character.fromJson(JSON.decode(cached)));
     }
 
     return _api.getCharacter(id).then((character) {
-      _cache[id] = character;
+      _preferences.setString(key, JSON.encode(character));
       return character;
     });
   }
 
   @override
-  Future<Map<int, CharacterListItem>> getList() {
+  Future<Map<int, CharacterListItem>> getList({bool refresh: false}) {
     String key = 'character_list';
 
     List<String> list = _preferences.getStringList(key);
-    if (list == null) {
-      return _api.getCharacterList().then((r) {
-        _preferences.setStringList(
-            key,
-            r.values.map((e) {
-              return JSON.encode(e);
-            }).toList());
-        return r;
+    if (list != null && !refresh) {
+      Map<int, CharacterListItem> map = new Map();
+      list.forEach((e) {
+        CharacterListItem item = CharacterListItem.fromJson(JSON.decode(e));
+        map[item.id] = item;
       });
+      return new Future.value(map);
     }
 
-    Map<int, CharacterListItem> map = new Map();
-    list.forEach((e) {
-      CharacterListItem item = CharacterListItem.fromJson(JSON.decode(e));
-      map[item.id] = item;
+    return _api.getCharacterList().then((r) {
+      _preferences.setStringList(
+          key,
+          r.values.map((e) {
+            return JSON.encode(e);
+          }).toList());
+      return r;
     });
-    return new Future.value(map);
   }
 }

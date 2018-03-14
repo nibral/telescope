@@ -49,6 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ? new AppBar(
               title: new Text('telescope'),
               centerTitle: true,
+              actions: <Widget>[
+                new IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _handleRefreshButtonPressed,
+                ),
+              ],
             )
           : null,
       body: new Center(
@@ -107,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _loadCharacterList() async {
+  void _loadCharacterList({bool refresh: false}) async {
     final CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
     final Widget iconPlaceholder = new SizedBox(
@@ -115,12 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
       width: _iconSize,
     );
 
-    repository.getList().then((characters) {
+    repository.getList(refresh: refresh).then((characters) {
       characters.values.forEach((character) {
         setState(() {
           _icons[character.id] = iconPlaceholder;
         });
-        repository.find(character.id).then((detail) {
+        repository.find(character.id, refresh: refresh).then((detail) {
           setState(() {
             _icons[character.id] = new LocalCachedNetworkImage(
               detail.iconImageUrl,
@@ -140,5 +146,10 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
     });
+  }
+
+  void _handleRefreshButtonPressed() {
+    _loadCharacterList(refresh: true);
+    // TODO invalidate image cache
   }
 }
