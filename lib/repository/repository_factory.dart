@@ -21,7 +21,6 @@ class RepositoryFactory {
 
   RepositoryFactory._internal() {
     _api = new StarlightApiImpl();
-    _cardRepository = new CardRepositoryImpl(_api, new Map());
   }
 
   Future<CharacterRepository> getCharacterRepository(
@@ -39,7 +38,18 @@ class RepositoryFactory {
     return _characterRepository;
   }
 
-  CardRepository getCardRepository() {
+  Future<CardRepository> getCardRepository(
+      {SharedPreferences preferences}) async {
+    if (preferences != null) {
+      return new CardRepositoryImpl(_api, preferences);
+    }
+
+    if (_cardRepository != null) {
+      return _cardRepository;
+    }
+
+    _cardRepository =
+        new CardRepositoryImpl(_api, await SharedPreferences.getInstance());
     return _cardRepository;
   }
 }

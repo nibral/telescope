@@ -1,25 +1,30 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:telescope/api/starlight_api.dart';
 import 'package:telescope/model/card.dart';
 import 'package:telescope/repository/card_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CardRepositoryImpl implements CardRepository {
   StarlightApi _api;
 
-  Map<int, Card> _cache;
+  SharedPreferences _preferences;
 
-  CardRepositoryImpl(this._api, this._cache);
+  CardRepositoryImpl(this._api, this._preferences);
 
   @override
-  Future<Card> find(int id) {
-    if (_cache.containsKey(id)) {
-      return new Future.value(_cache[id]);
+  Future<Card> find(int id, {bool refresh: false}) {
+    String key = 'card_$id';
+
+    String cached = _preferences.getString(key);
+    if (cached == null || refresh) {
+      return _api.getCard(id).then((card) {
+        _preferences.setString(key, JSON.encode(card));
+        return card;
+      });
     }
 
-    return _api.getCard(id).then((card) {
-      _cache[id] = card;
-      return card;
-    });
+    return new Future.value(Card.fromJson(JSON.decode(cached)));
   }
 }

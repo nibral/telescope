@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:telescope/api/starlight_api.dart';
@@ -20,6 +19,31 @@ class MockCharacterListItem extends Mock implements CharacterListItem {}
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
+  final String _encodedTestCharacter = '''
+      {
+        "id": 101,
+        "kanji_spaced": "島村 卯月",
+        "kana_spaced": "しまむら うづき",
+        "icon_image_ref": "https://truecolor.kirara.ca/icon_char/101.png"
+      }
+  ''';
+  final String _encodedTestCharacterListItem = '''
+        {
+        "chara_id": 101,
+        "conventional": "Shimamura Uzuki",
+        "kanji_spaced": "島村 卯月",
+        "kana_spaced": "しまむら うづき",
+        "cards": [
+          100001,
+          100075,
+          100255,
+          100293,
+          100447
+        ],
+        "ref": "/api/v1/char_t/101"
+      }
+  ''';
+
   StarlightApi _api;
   SharedPreferences _preferences;
   CharacterRepository _subject;
@@ -41,42 +65,41 @@ void main() {
   group('find', () {
     test('when cache is empty, call api.', () async {
       var character = new MockCharacter();
-      when(_api.getCharacter(123)).thenReturn(new Future.value(character));
+      when(_api.getCharacter(101)).thenReturn(new Future.value(character));
 
-      await _subject.find(123).then((actual) {
+      await _subject.find(101).then((actual) {
         expect(actual, character);
       });
 
-      verify(_api.getCharacter(123));
+      verify(_api.getCharacter(101));
     });
 
     test('when force refresh, call api', () async {
       var character = new MockCharacter();
-      when(_api.getCharacter(123)).thenReturn(new Future.value(character));
-      var cached = new Character(123, '島村 卯月', 'しまむら うづき', '');
-      when(_preferences.getString('character_123'))
-          .thenReturn(JSON.encode(cached));
+      when(_api.getCharacter(101)).thenReturn(new Future.value(character));
+      when(_preferences.getString('character_101'))
+          .thenReturn(_encodedTestCharacter);
 
-      await _subject.find(123, refresh: true).then((actual) {
+      await _subject.find(101, refresh: true).then((actual) {
         expect(actual, character);
       });
 
-      verify(_api.getCharacter(123));
+      verify(_api.getCharacter(101));
     });
 
     test('when object cached, use cache.', () async {
-      var character = new Character(123, '島村 卯月', 'しまむら うづき', '');
-      when(_preferences.getString('character_123'))
-          .thenReturn(JSON.encode(character));
+      when(_preferences.getString('character_101'))
+          .thenReturn(_encodedTestCharacter);
 
-      await _subject.find(123).then((actual) {
-        expect(actual.id, character.id);
-        expect(actual.name, character.name);
-        expect(actual.nameKana, character.nameKana);
-        expect(actual.iconImageUrl, character.iconImageUrl);
+      await _subject.find(101).then((actual) {
+        expect(actual.id, 101);
+        expect(actual.name, '島村 卯月');
+        expect(actual.nameKana, 'しまむら うづき');
+        expect(actual.iconImageUrl,
+            'https://truecolor.kirara.ca/icon_char/101.png');
       });
 
-      verifyNever(_api.getCharacter(123));
+      verifyNever(_api.getCharacter(101));
     });
   });
 
@@ -102,10 +125,8 @@ void main() {
           .thenReturn(new Future.value(<int, CharacterListItem>{
         101: listItem,
       }));
-      CharacterListItem cached =
-          new CharacterListItem(101, '島村 卯月', 'しまむら うづき', [100001]);
       when(_preferences.getStringList('character_list'))
-          .thenReturn(<String>[JSON.encode(cached)]);
+          .thenReturn(<String>[_encodedTestCharacterListItem]);
 
       await _subject.getList(refresh: true).then((actual) {
         expect(actual[101], listItem);
@@ -115,10 +136,8 @@ void main() {
     });
 
     test('when list data cached, use cache.', () async {
-      CharacterListItem listItem =
-          new CharacterListItem(101, '島村 卯月', 'しまむら うづき', [100001]);
       when(_preferences.getStringList('character_list'))
-          .thenReturn(<String>[JSON.encode(listItem)]);
+          .thenReturn(<String>[_encodedTestCharacterListItem]);
 
       await _subject.getList().then((actual) {
         expect(actual[101].id, 101);

@@ -7,7 +7,16 @@ class Card {
   final String spreadImageUrl;
 
   static fromJson(json) {
-    return new Card(
-        json['id'], json['name'], json['evolution_id'], json['spread_image_ref']);
+    return new Card(json['id'], json['name'], json['evolution_id'],
+        json['spread_image_ref']);
+  }
+
+  toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'evolution_id': evolutionCardId,
+      'spread_image_ref': spreadImageUrl,
+    };
   }
 }

@@ -19,14 +19,14 @@ class CharacterRepositoryImpl implements CharacterRepository {
     String key = 'character_$id';
 
     String cached = _preferences.getString(key);
-    if (cached != null && !refresh) {
-      return new Future.value(Character.fromJson(JSON.decode(cached)));
+    if (cached == null || refresh) {
+      return _api.getCharacter(id).then((character) {
+        _preferences.setString(key, JSON.encode(character));
+        return character;
+      });
     }
 
-    return _api.getCharacter(id).then((character) {
-      _preferences.setString(key, JSON.encode(character));
-      return character;
-    });
+    return new Future.value(Character.fromJson(JSON.decode(cached)));
   }
 
   @override
@@ -34,22 +34,22 @@ class CharacterRepositoryImpl implements CharacterRepository {
     String key = 'character_list';
 
     List<String> list = _preferences.getStringList(key);
-    if (list != null && !refresh) {
-      Map<int, CharacterListItem> map = new Map();
-      list.forEach((e) {
-        CharacterListItem item = CharacterListItem.fromJson(JSON.decode(e));
-        map[item.id] = item;
+    if (list == null || refresh) {
+      return _api.getCharacterList().then((r) {
+        _preferences.setStringList(
+            key,
+            r.values.map((e) {
+              return JSON.encode(e);
+            }).toList());
+        return r;
       });
-      return new Future.value(map);
     }
 
-    return _api.getCharacterList().then((r) {
-      _preferences.setStringList(
-          key,
-          r.values.map((e) {
-            return JSON.encode(e);
-          }).toList());
-      return r;
+    Map<int, CharacterListItem> map = new Map();
+    list.forEach((e) {
+      CharacterListItem item = CharacterListItem.fromJson(JSON.decode(e));
+      map[item.id] = item;
     });
+    return new Future.value(map);
   }
 }

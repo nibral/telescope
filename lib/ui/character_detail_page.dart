@@ -99,7 +99,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
   void _loadCharacterDetail() async {
     final CardRepository cardRepository =
-        new RepositoryFactory().getCardRepository();
+        await new RepositoryFactory().getCardRepository();
     final List<Map<String, String>> images = [];
 
     await Future.forEach(widget.cardIdList, (id) async {
