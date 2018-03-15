@@ -49,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: isPortrait
           ? new AppBar(
               title: new Text('telescope'),
+              backgroundColor: Colors.black,
               centerTitle: true,
               actions: <Widget>[
                 new IconButton(
@@ -75,7 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     onTap: () {
                       Navigator.of(context).push(new MaterialPageRoute(
                             builder: (_) => new CharacterDetailPage(
-                                character.name, character.cardIdList),
+                                character.id,
+                                character.name,
+                                character.cardIdList),
                           ));
                     },
                     child: new Stack(

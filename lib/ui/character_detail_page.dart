@@ -3,15 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:telescope/model/card.dart' as CharacterCard;
+import 'package:telescope/model/character.dart';
 import 'package:telescope/repository/card_repository.dart';
+import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
 import 'package:telescope/ui/widget/local_cached_network_image.dart';
 
 class CharacterDetailPage extends StatefulWidget {
+  final int id;
   final String name;
   final List<int> cardIdList;
 
-  const CharacterDetailPage(this.name, this.cardIdList);
+  const CharacterDetailPage(this.id, this.name, this.cardIdList);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,6 +24,7 @@ class CharacterDetailPage extends StatefulWidget {
 
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
   bool _isLoading = true;
+  Color _typeColor = Colors.black;
   List<Map<String, String>> _cardImages = [];
 
   @override
@@ -91,6 +95,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
                 ),
               ),
               centerTitle: true,
+              backgroundColor: _typeColor,
             )
           : null,
       body: body,
@@ -98,6 +103,26 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
   }
 
   void _loadCharacterDetail() async {
+    await (await new RepositoryFactory().getCharacterRepository())
+        .find(widget.id)
+        .then((character) {
+      setState(() {
+        switch (character.type) {
+          case 'cute':
+            _typeColor = Colors.pink;
+            break;
+          case 'cool':
+            _typeColor = Colors.blue;
+            break;
+          case 'passion':
+            _typeColor = Colors.amber;
+            break;
+          default:
+            _typeColor = Colors.black;
+        }
+      });
+    });
+
     final CardRepository cardRepository =
         await new RepositoryFactory().getCardRepository();
     final List<Map<String, String>> images = [];

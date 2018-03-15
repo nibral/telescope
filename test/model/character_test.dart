@@ -11,6 +11,7 @@ void main() {
         "id": 101,
         "kanji_spaced": "島村 卯月",
         "kana_spaced": "しまむら うづき",
+        "type": "cute",
         "icon_image_ref": "https://truecolor.kirara.ca/icon_char/101.png"
       }      
       ''');
@@ -20,6 +21,7 @@ void main() {
       expect(character.id, 101);
       expect(character.name, '島村 卯月');
       expect(character.nameKana, 'しまむら うづき');
+      expect(character.type, 'cute');
       expect(character.iconImageUrl,
           'https://truecolor.kirara.ca/icon_char/101.png');
     });
