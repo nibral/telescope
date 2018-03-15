@@ -28,4 +28,13 @@ class CacheManager {
       return data;
     });
   }
+
+  void clear() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    await directory.list().forEach((entity) {
+      if (entity is File) {
+        entity.deleteSync();
+      }
+    });
+  }
 }
