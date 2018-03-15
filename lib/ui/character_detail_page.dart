@@ -24,7 +24,7 @@ class CharacterDetailPage extends StatefulWidget {
 
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
   bool _isLoading = true;
-  Color _typeColor = Colors.black;
+  Color _typeColor = Colors.grey;
   List<Map<String, String>> _cardImages = [];
 
   @override
@@ -82,7 +82,10 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
         );
       }
     } else {
-      body = new Center(child: new CircularProgressIndicator());
+      body = new Center(
+          child: new CircularProgressIndicator(
+        valueColor: new AlwaysStoppedAnimation<Color>(_typeColor),
+      ));
     }
 
     return new Scaffold(

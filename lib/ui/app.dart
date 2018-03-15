@@ -60,7 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           : null,
       body: _characterList.isEmpty
-          ? new Center(child: const CircularProgressIndicator())
+          ? new Center(
+              child: new CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey),
+            ))
           : new Center(
               child: new GridView.builder(
                 shrinkWrap: true,
