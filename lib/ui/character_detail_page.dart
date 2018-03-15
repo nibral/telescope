@@ -25,7 +25,7 @@ class CharacterDetailPage extends StatefulWidget {
 class _CharacterDetailPageState extends State<CharacterDetailPage> {
   bool _isLoading = true;
   Color _typeColor = Colors.grey;
-  List<Map<String, String>> _cardImages = [];
+  List<CharacterCard.Card> _cards = [];
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
     Widget body;
     if (!_isLoading) {
-      if (_cardImages.isEmpty) {
+      if (_cards.isEmpty) {
         body = new Container(
           child: new Center(
             child: new Text(
@@ -64,13 +64,13 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
             new SliverList(
                 delegate: new SliverChildBuilderDelegate(
               (_, index) {
-                var image = _cardImages[index];
+                var card = _cards[index];
                 return new Container(
-                  child: new CardSpreadImage(image["name"], image["imageUrl"]),
+                  child: new CardSpreadImage(card.name, card.spreadImageUrl),
                   padding: const EdgeInsets.only(top: 16.0),
                 );
               },
-              childCount: _cardImages.length,
+              childCount: _cards.length,
             )),
             new SliverToBoxAdapter(
               child: new Container(
@@ -128,31 +128,25 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
     final CardRepository cardRepository =
         await new RepositoryFactory().getCardRepository();
-    final List<Map<String, String>> images = [];
+    final List<CharacterCard.Card> cards = [];
 
     await Future.forEach(widget.cardIdList, (id) async {
       CharacterCard.Card card = await cardRepository.find(id);
       if (card.spreadImageUrl != null) {
-        images.add({
-          "name": card.name,
-          "imageUrl": card.spreadImageUrl,
-        });
+        cards.add(card);
       }
 
       if (card.evolutionCardId != 0) {
         CharacterCard.Card evolutionCard =
             await cardRepository.find(card.evolutionCardId);
         if (evolutionCard.spreadImageUrl != null) {
-          images.add({
-            "name": evolutionCard.name,
-            "imageUrl": evolutionCard.spreadImageUrl,
-          });
+          cards.add(evolutionCard);
         }
       }
     });
 
     setState(() {
-      _cardImages = images;
+      _cards = cards;
       _isLoading = false;
     });
   }
