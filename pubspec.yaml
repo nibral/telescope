@@ -10,6 +10,7 @@ dependencies:
   cupertino_icons: ^0.1.0
   shared_preferences: ^0.3.3
   path_provider: ^0.4.0
+  flutter_search_bar: ^2.0.0
 
 dev_dependencies:
   flutter_test:
