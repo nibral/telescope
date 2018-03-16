@@ -178,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _loadCharacterList({bool refresh: false}) async {
+  void _loadCharacterList() async {
     final CharacterRepository repository =
         await new RepositoryFactory().getCharacterRepository();
     final Widget iconPlaceholder = new SizedBox(
@@ -186,12 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
       width: _iconSize,
     );
 
-    repository.getList(refresh: refresh).then((characters) {
+    repository.getList().then((characters) {
       characters.values.forEach((character) {
         setState(() {
           _icons[character.id] = iconPlaceholder;
         });
-        repository.find(character.id, refresh: refresh).then((detail) {
+        repository.find(character.id).then((detail) {
           setState(() {
             _icons[character.id] = new LocalCachedNetworkImage(
               detail.iconImageUrl,
@@ -220,13 +220,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
-  void _handleRefreshButtonPressed() {
+  void _handleRefreshButtonPressed() async {
     setState(() {
       _characterList = [];
       _icons = new Map();
     });
-    (new CacheManager()).clear();
-    _loadCharacterList(refresh: true);
+    new RepositoryFactory().invalidateCache();
+    new CacheManager().clear();
+    _loadCharacterList();
   }
 
   void _handleSearchQueryChanged() {

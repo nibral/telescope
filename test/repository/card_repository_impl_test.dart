@@ -55,18 +55,6 @@ void main() {
       verify(_api.getCard(100001));
     });
 
-    test('when force refresh, call api.', () async {
-      var card = new MockCard();
-      when(_api.getCard(100001)).thenReturn(new Future.value(card));
-      when(_preferences.getString('card_100001')).thenReturn(_encodedTestCard);
-
-      await _subject.find(100001, refresh: true).then((actual) {
-        expect(actual, card);
-      });
-
-      verify(_api.getCard(100001));
-    });
-
     test('when object cached, use cache.', () async {
       when(_preferences.getString('card_100001')).thenReturn(_encodedTestCard);
 

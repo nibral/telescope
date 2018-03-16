@@ -52,4 +52,8 @@ class RepositoryFactory {
         new CardRepositoryImpl(_api, await SharedPreferences.getInstance());
     return _cardRepository;
   }
+
+  void invalidateCache() async {
+    (await SharedPreferences.getInstance()).clear();
+  }
 }

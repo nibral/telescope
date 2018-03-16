@@ -75,19 +75,6 @@ void main() {
       verify(_api.getCharacter(101));
     });
 
-    test('when force refresh, call api', () async {
-      var character = new MockCharacter();
-      when(_api.getCharacter(101)).thenReturn(new Future.value(character));
-      when(_preferences.getString('character_101'))
-          .thenReturn(_encodedTestCharacter);
-
-      await _subject.find(101, refresh: true).then((actual) {
-        expect(actual, character);
-      });
-
-      verify(_api.getCharacter(101));
-    });
-
     test('when object cached, use cache.', () async {
       when(_preferences.getString('character_101'))
           .thenReturn(_encodedTestCharacter);
@@ -115,22 +102,6 @@ void main() {
       when(_preferences.getStringList('character_list')).thenReturn(null);
 
       await _subject.getList().then((actual) {
-        expect(actual[101], listItem);
-      });
-
-      verify(_api.getCharacterList());
-    });
-
-    test('when force refresh, call api.', () async {
-      var listItem = new MockCharacterListItem();
-      when(_api.getCharacterList())
-          .thenReturn(new Future.value(<int, CharacterListItem>{
-        101: listItem,
-      }));
-      when(_preferences.getStringList('character_list'))
-          .thenReturn(<String>[_encodedTestCharacterListItem]);
-
-      await _subject.getList(refresh: true).then((actual) {
         expect(actual[101], listItem);
       });
 

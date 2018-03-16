@@ -15,11 +15,11 @@ class CharacterRepositoryImpl implements CharacterRepository {
   CharacterRepositoryImpl(this._api, this._preferences);
 
   @override
-  Future<Character> find(int id, {bool refresh: false}) {
+  Future<Character> find(int id) {
     String key = 'character_$id';
 
     String cached = _preferences.getString(key);
-    if (cached == null || refresh) {
+    if (cached == null) {
       return _api.getCharacter(id).then((character) {
         _preferences.setString(key, JSON.encode(character));
         return character;
@@ -30,11 +30,11 @@ class CharacterRepositoryImpl implements CharacterRepository {
   }
 
   @override
-  Future<Map<int, CharacterListItem>> getList({bool refresh: false}) {
+  Future<Map<int, CharacterListItem>> getList() {
     String key = 'character_list';
 
     List<String> list = _preferences.getStringList(key);
-    if (list == null || refresh) {
+    if (list == null) {
       return _api.getCharacterList().then((r) {
         _preferences.setStringList(
             key,

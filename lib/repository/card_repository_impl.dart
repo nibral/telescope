@@ -14,11 +14,11 @@ class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(this._api, this._preferences);
 
   @override
-  Future<Card> find(int id, {bool refresh: false}) {
+  Future<Card> find(int id) {
     String key = 'card_$id';
 
     String cached = _preferences.getString(key);
-    if (cached == null || refresh) {
+    if (cached == null) {
       return _api.getCard(id).then((card) {
         _preferences.setString(key, JSON.encode(card));
         return card;
