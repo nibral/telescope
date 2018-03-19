@@ -128,25 +128,29 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
 
     final CardRepository cardRepository =
         await new RepositoryFactory().getCardRepository();
-    final List<CharacterCard.Card> cards = [];
+    List<CharacterCard.Card> cards = [];
 
-    await Future.forEach(widget.cardIdList, (id) async {
-      CharacterCard.Card card = await cardRepository.find(id);
-      if (card.spreadImageUrl != null) {
-        cards.add(card);
-      }
+    cards.addAll(
+        await Future.wait<CharacterCard.Card>(widget.cardIdList.map((id) {
+      return cardRepository.find(id);
+    })));
+    cards.addAll(await Future.wait<CharacterCard.Card>(cards.where((card) {
+      return card.evolutionCardId != 0;
+    }).map((card) {
+      return cardRepository.find(card.evolutionCardId);
+    })));
 
-      if (card.evolutionCardId != 0) {
-        CharacterCard.Card evolutionCard =
-            await cardRepository.find(card.evolutionCardId);
-        if (evolutionCard.spreadImageUrl != null) {
-          cards.add(evolutionCard);
-        }
+    cards.sort((a, b) {
+      if (a.id == b.id) {
+        return 0;
       }
+      return (a.id < b.id) ? -1 : 1;
     });
 
     setState(() {
-      _cards = cards;
+      _cards = cards.where((card) {
+        return card.spreadImageUrl != null;
+      }).toList();
       _isLoading = false;
     });
   }
