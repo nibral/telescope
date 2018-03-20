@@ -4,7 +4,8 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:telescope/infrastructure/cache_manager.dart';
+import 'package:telescope/infrastructure/application_documents_impl.dart';
+import 'package:telescope/repository/repository_factory.dart';
 
 class LocalCachedNetworkImage extends StatefulWidget {
   final String imageUrl;
@@ -140,7 +141,7 @@ class _LocalCachedNetworkImageProvider
   }
 
   Future<Codec> _loadImage() async {
-    Uint8List data = await new CacheManager().load(url);
-    return await instantiateImageCodec(data);
+    var repository = await new RepositoryFactory().getImageCacheRepository();
+    return await instantiateImageCodec(await repository.find(url));
   }
 }

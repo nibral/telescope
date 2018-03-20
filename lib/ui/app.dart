@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:telescope/infrastructure/cache_manager.dart';
+import 'package:telescope/infrastructure/application_documents_impl.dart';
 import 'package:telescope/model/character_list_item.dart';
 import 'package:telescope/repository/character_repository.dart';
 import 'package:telescope/repository/repository_factory.dart';
@@ -226,7 +226,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _icons = new Map();
     });
     new RepositoryFactory().invalidateCache();
-    new CacheManager().clear();
     _loadCharacterList();
   }
 
