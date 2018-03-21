@@ -66,7 +66,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
               (_, index) {
                 var card = _cards[index];
                 return new Container(
-                  child: new CardSpreadImage(card.name, card.spreadImageUrl),
+                  child: new CardSpreadImage('${card.name} (${card.id})', card.spreadImageUrl),
                   padding: const EdgeInsets.only(top: 16.0),
                 );
               },
@@ -92,7 +92,7 @@ class _CharacterDetailPageState extends State<CharacterDetailPage> {
       appBar: isPortrait
           ? new AppBar(
               title: new Text(
-                widget.name,
+                '${widget.name} (${widget.id})',
                 style: new TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
